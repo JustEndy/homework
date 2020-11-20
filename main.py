@@ -2,13 +2,14 @@ import sys
 import sqlite3
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
-from PyQt5.uic import loadUi
+from UI.mainUI import Ui_MainWindow_Main
+from UI.addEditCoffeeForm import Ui_MainWindow
 
 
-class addRed(QMainWindow):
+class addRed(QMainWindow, Ui_MainWindow):
     def __init__(self, p, red=False, index=None):
         super().__init__()
-        loadUi('addEditCoffeeForm.ui', self)
+        self.setupUi(self)
         self.index = index
         self.p = p
         self.show()
@@ -28,7 +29,7 @@ class addRed(QMainWindow):
                     if self.lineCost.text():
                         if self.lineSize.text():
                             try:
-                                con = sqlite3.connect('coffee.sqlite')
+                                con = sqlite3.connect('data/coffee.sqlite')
                                 cur = con.cursor()
                                 cur.execute("""INSERT INTO 
                                 coffee(sort, roast, ground, desription, cost, size) 
@@ -45,7 +46,7 @@ class addRed(QMainWindow):
     def load(self):
         try:
             index = int(self.p.tbl.item(self.index, 0).text())
-            con = sqlite3.connect('coffee.sqlite')
+            con = sqlite3.connect('data/coffee.sqlite')
             cur = con.cursor()
             result = cur.execute("""SELECT * FROM coffee WHERE ID = ?""", (index,)).fetchone()
 
@@ -66,7 +67,7 @@ class addRed(QMainWindow):
                         if self.lineSize.text():
                             try:
                                 index = int(self.p.tbl.item(self.index, 0).text())
-                                con = sqlite3.connect('coffee.sqlite')
+                                con = sqlite3.connect('data/coffee.sqlite')
                                 cur = con.cursor()
                                 cur.execute("""UPDATE coffee 
                                 SET sort = ?, roast = ?,
@@ -84,10 +85,10 @@ class addRed(QMainWindow):
         return
 
 
-class MyWidget(QMainWindow):
+class MyWidget(QMainWindow, Ui_MainWindow_Main):
     def __init__(self):
         super().__init__()
-        loadUi('main.ui', self)
+        self.setupUi(self)
         self.loadData()
         self.index = None
 
@@ -107,7 +108,7 @@ class MyWidget(QMainWindow):
         self.form = addRed(self)
 
     def loadData(self):
-        con = sqlite3.connect('coffee.sqlite')
+        con = sqlite3.connect('data/coffee.sqlite')
         cur = con.cursor()
         result = cur.execute("""SELECT * FROM coffee""").fetchall()
 
